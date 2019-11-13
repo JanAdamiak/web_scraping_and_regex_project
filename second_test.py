@@ -5,32 +5,34 @@ import time
 import csv
 import re
 
-test1 = 'https://www.medica-tradefair.com/vis/v1/en/exhibitors/medcom2019.2623084?oid=80398&lang=2'
-
-###open the csv file
-keywords = []
+keywords = ['sensors', 'examination', 'tests']
 dataframe = {}
 index = 1
 
-##for i in 'name of the csv file'):
-html = urlopen(test1)
-soup = BeautifulSoup(html, features='lxml')
-for link in soup.find_all('div', class_='ng-scope ng-isolate-scope'):
-    v = (link.get_text('|', strip=True))
-    if re.match(keywords, v) is not None:
-        temp_list = []
-            #email
-        for link2 in soup.find_all('a', class_='break-word vis-tracking-mailto'):
-            temp_list.append(link2.get_text('|', strip=True))
-            #website
-        for link3 in soup.find_all('span', class_='break-word'):
-            temp_list.append(link3.get_text('|', strip=True))
-        temp_list.append(v)
-        dataframe.update({index : temp_list})
-        index += 1
-time.sleep(3)
-print(dataframe)
-###Write to csv
+with open('/home/jan/Projects/Web_scraper/websites.csv', 'r') as csv_file:
+    csv_reader = csv.reader(csv_file)
+    my_list = list(csv_reader)
+    website_list = [item for sublist in my_list for item in sublist]
+    for i in website_list:
+        html = urlopen(i)
+        soup = BeautifulSoup(html, features='lxml')
+        for link in soup.find_all('div', class_='ng-scope ng-isolate-scope'):
+            v = (link.get_text('|', strip=True))
+            if re.search(keywords, v) is not None:
+                temp_list = []
+                #email
+                for link2 in soup.find_all('a', class_='break-word vis-tracking-mailto'):
+                    temp_list.append(link2.get_text('|', strip=True))
+                #website
+                for link3 in soup.find_all('span', class_='break-word'):
+                    temp_list.append(link3.get_text('|', strip=True))
+                temp_list.append(v)
+                dataframe.update({index : temp_list})
+                index += 1
+            time.sleep(10)
 
-#keywords, check if any are in products if yes append v if not move on
-#print('Done!!!')
+with open('/home/jan/Projects/Web_scraper/results.csv', 'w') as myfile:
+    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+    wr.writerow(dataframe)
+
+print('Done!!!')
