@@ -20,6 +20,6 @@ for i in index_list:
     time.sleep(3)
 
 #Saving the data into a csv file.
-with open('/home/jan/Desktop/myfile.csv', 'w') as myfile:
+with open('/home/jan/Projects/Web_scraper/websites.csv', 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(all_exhibitors)
